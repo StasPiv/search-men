@@ -1,0 +1,5 @@
+parameters:
+  app.service.search_men.class: AppBundle\Service\SearchMen
+services:
+  app.service.search_men:
+    class: '%app.service.search_men.class%'
