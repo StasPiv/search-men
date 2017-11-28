@@ -12,6 +12,7 @@ namespace AppBundle\Service;
 class SearchMen
 {
     private $siteUrl = 'http://www.charmdate.com';
+    private $siteSecureUrl = 'https://www.charmdate.com';
 
     private $agent;
     private $staff;
@@ -250,13 +251,24 @@ class SearchMen
     /**
      * @param string $manId
      * @param string $womanId
+     * @return string
      */
-    private function sendEmail(string $manId = 'CM32985282', string $womanId = 'C999099')
+    public function sendEmail(string $manId = 'CM32985282', string $womanId = 'C999099')
     {
+        if (!$this->cookie) {
+            $this->cookie = $this->login();
+        }
+
         $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_URL, $this->siteUrl."/clagt/admire/send_admire_mail2.php");
+        curl_setopt($ch, CURLOPT_URL, $this->siteSecureUrl."/clagt/admire/send_admire_mail2.php");
         curl_setopt($ch, CURLOPT_POST, 1);
+
+        curl_setopt(
+            $ch,
+            CURLOPT_POSTFIELDS,
+            'admire_type=T&at_code=C999099-A6&admire_category=B&manid='.$manId.'&womanid='.$womanId
+        );
 
         curl_setopt(
             $ch,
@@ -265,9 +277,10 @@ class SearchMen
                 'Upgrade-Insecure-Requests: 1',
                 'Origin:'.$this->siteUrl,
                 'Connection:keep-alive',
+                'Content-Type:application/x-www-form-urlencoded',
                 'User-Agent:Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36',
-                'Referer:'.$this->siteUrl.'/clagt/admire/send_admire_mail.php?admire_type=T&admire_category=B&manid='.$manId.'&womanid='.$womanId,
-                'Cookie:PHPSESSID='.$this->cookie,
+                'Referer:'.$this->siteUrl.'/clagt/admire/send_admire_mail.php?admire_type=T&at_code=C999099-A6&admire_category=B&manid='.$manId.'&womanid='.$womanId,
+                'Cookie:Cookie_agtAdmirePic=C999099-36fbc3a1748dc90f75382748eede7de8.jpg; PHPSESSID='.$this->cookie.'; CD_Change_Screen=1920;',
             ]
         );
 
@@ -279,8 +292,40 @@ class SearchMen
 
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 
-        curl_exec($ch);
+        $response = curl_exec($ch);
 
         curl_close($ch);
+
+        return $response;
+    }
+
+    /**
+     * @param mixed $agent
+     * @return SearchMen
+     */
+    public function setAgent($agent)
+    {
+        $this->agent = $agent;
+        return $this;
+    }
+
+    /**
+     * @param mixed $staff
+     * @return SearchMen
+     */
+    public function setStaff($staff)
+    {
+        $this->staff = $staff;
+        return $this;
+    }
+
+    /**
+     * @param mixed $password
+     * @return SearchMen
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
+        return $this;
     }
 }
