@@ -17,3 +17,9 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret: ThisTokenIsNotSoSecretChangeIt
+
+    default_agent: C804
+    default_staff: S59241
+    default_password: 121427111
+
+
